@@ -42,17 +42,17 @@
 
 #pragma once
 
+#include <urlcpp/path.h>
 #include <string>
 #include <stdexcept>
-#include <boost/regex.hpp>
+#include <regex>
 
-#include "Path.h"
 
 namespace url
 {
 
-namespace utils
-{
+  namespace utils
+  {
 
 /**
  * Validating regexps
@@ -102,32 +102,32 @@ namespace utils
 /**
  * Url parsing regular expressions
  */
-enum {
-    RE_URL=0,
-    RE_SCHEME,
-    RE_HOST,
-    RE_PORT,
-    RE_IPVFUT,
-    RE_IPV6,
-    RE_IPV4
-};
+    enum {
+      RE_URL=0,
+      RE_SCHEME,
+      RE_HOST,
+      RE_PORT,
+      RE_IPVFUT,
+      RE_IPV6,
+      RE_IPV4
+    };
 
-static const char* const url_regex[] = {
-    /* RE_URL */
-    "^(([^:/?#]+):)?(//([^/?#]*)|///)?([^?#]*)(\\?[^#]*)?(#.*)?",
-    /* RE_SCHEME */
-    "^[[:alpha:]][[:alnum:]+.-]*$",
-    /* RE_HOST */
-    "^[[:alnum:]]([[:alnum:].-]*[[:alnum:].])?$",
-    /* RE_PORT */
-    "^\\d{1,5}$",
-    /* RE_IPVFUT*/
-    "^v[[:xdigit:]]\\.1[[:alnum:]._~!$&'()*+,;=:-]*$",
-    /* RE_IPV6 */
-    ipv6,
-    /* RE_IPV4 */
-    ipv4
-};
+    static const char* const url_regex[] = {
+      /* RE_URL */
+      "^(([^:/?#]+):)?(//([^/?#]*)|///)?([^?#]*)(\\?[^#]*)?(#.*)?",
+      /* RE_SCHEME */
+      "^[[:alpha:]][[:alnum:]+.-]*$",
+      /* RE_HOST */
+      "^[[:alnum:]]([[:alnum:].-]*[[:alnum:].])?$",
+      /* RE_PORT */
+      "^\\d{1,5}$",
+      /* RE_IPVFUT*/
+      "^v[[:xdigit:]]\\.1[[:alnum:]._~!$&'()*+,;=:-]*$",
+      /* RE_IPV6 */
+      ipv6,
+      /* RE_IPV4 */
+      ipv4
+    };
 
 #undef ipv6
 #undef ls32
@@ -138,15 +138,15 @@ static const char* const url_regex[] = {
 /**
  * Url escaping
  */
-enum {
-    URL_CHAR_RESERVED    = 0x1,
-    URL_CHAR_UNSAFE        = 0x2,
-    URL_CHAR_ESC        = 0x4,
-    URL_CHAR_AUTH        = 0x8,
-    URL_CHAR_PATH        = 0x10,
-    URL_CHAR_QUERY        = 0x20,
-    URL_CHAR_FRAGMENT    = 0x40
-};
+    enum {
+      URL_CHAR_RESERVED    = 0x1,
+      URL_CHAR_UNSAFE        = 0x2,
+      URL_CHAR_ESC        = 0x4,
+      URL_CHAR_AUTH        = 0x8,
+      URL_CHAR_PATH        = 0x10,
+      URL_CHAR_QUERY        = 0x20,
+      URL_CHAR_FRAGMENT    = 0x40
+    };
 
 #define R URL_CHAR_RESERVED
 #define U URL_CHAR_UNSAFE
@@ -162,35 +162,35 @@ enum {
  * For path: ?#
  * For query: #
  */
-static const unsigned char url_char_table[256] =
-{
-  X,  X,  X,  X,   X,  X,  X,  X,     /* NUL SOH STX ETX  EOT ENQ ACK BEL */
-  X,  X,  X,  X,   X,  X,  X,  X,     /* BS  HT  LF  VT   FF  CR  SO  SI  */
-  X,  X,  X,  X,   X,  X,  X,  X,     /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
-  X,  X,  X,  X,   X,  X,  X,  X,     /* CAN EM  SUB ESC  FS  GS  RS  US  */
-  X,  0,  X, RU|A|P|Q, R, X, R, 0,    /* SP  !   "   #    $   %   &   '   */
-  0,  0,  0,  R,   R,  0,  0,  R|A,   /* (   )   *   +    ,   -   .   /   */
-  0,  0,  0,  0,   0,  0,  0,  0,     /* 0   1   2   3    4   5   6   7   */
-  0,  0, RU,  R,   X,  R,  X,  R|A|P, /* 8   9   :   ;    <   =   >   ?   */
- RU,  0,  0,  0,   0,  0,  0,  0,     /* @   A   B   C    D   E   F   G   */
-  0,  0,  0,  0,   0,  0,  0,  0,     /* H   I   J   K    L   M   N   O   */
-  0,  0,  0,  0,   0,  0,  0,  0,     /* P   Q   R   S    T   U   V   W   */
-  0,  0,  0, RU,   X, RU,  X,  0,     /* X   Y   Z   [    \   ]   ^   _   */
-  X,  0,  0,  0,   0,  0,  0,  0,     /* `   a   b   c    d   e   f   g   */
-  0,  0,  0,  0,   0,  0,  0,  0,     /* h   i   j   k    l   m   n   o   */
-  0,  0,  0,  0,   0,  0,  0,  0,     /* p   q   r   s    t   u   v   w   */
-  0,  0,  0,  X,   X,  X,  0,  X,     /* x   y   z   {    |   }   ~   DEL */
+    static const unsigned char url_char_table[256] =
+      {
+        X,  X,  X,  X,   X,  X,  X,  X,     /* NUL SOH STX ETX  EOT ENQ ACK BEL */
+        X,  X,  X,  X,   X,  X,  X,  X,     /* BS  HT  LF  VT   FF  CR  SO  SI  */
+        X,  X,  X,  X,   X,  X,  X,  X,     /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
+        X,  X,  X,  X,   X,  X,  X,  X,     /* CAN EM  SUB ESC  FS  GS  RS  US  */
+        X,  0,  X, RU|A|P|Q, R, X, R, 0,    /* SP  !   "   #    $   %   &   '   */
+        0,  0,  0,  R,   R,  0,  0,  R|A,   /* (   )   *   +    ,   -   .   /   */
+        0,  0,  0,  0,   0,  0,  0,  0,     /* 0   1   2   3    4   5   6   7   */
+        0,  0, RU,  R,   X,  R,  X,  R|A|P, /* 8   9   :   ;    <   =   >   ?   */
+        RU,  0,  0,  0,   0,  0,  0,  0,     /* @   A   B   C    D   E   F   G   */
+        0,  0,  0,  0,   0,  0,  0,  0,     /* H   I   J   K    L   M   N   O   */
+        0,  0,  0,  0,   0,  0,  0,  0,     /* P   Q   R   S    T   U   V   W   */
+        0,  0,  0, RU,   X, RU,  X,  0,     /* X   Y   Z   [    \   ]   ^   _   */
+        X,  0,  0,  0,   0,  0,  0,  0,     /* `   a   b   c    d   e   f   g   */
+        0,  0,  0,  0,   0,  0,  0,  0,     /* h   i   j   k    l   m   n   o   */
+        0,  0,  0,  0,   0,  0,  0,  0,     /* p   q   r   s    t   u   v   w   */
+        0,  0,  0,  X,   X,  X,  0,  X,     /* x   y   z   {    |   }   ~   DEL */
 
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
 
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-  X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
-};
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+        X, X, X, X,  X, X, X, X,  X, X, X, X,  X, X, X, X,
+      };
 #undef R
 #undef U
 #undef E
@@ -203,30 +203,30 @@ static const unsigned char url_char_table[256] =
 
 #define url_char_test(c, mask) (url_char_table[(unsigned char)(c)] & (mask))
 
-} // end namespace
+  } // end namespace
 
 /**
  * @brief Exception thrown if the url doesn't look to be valid
  */
-class BadUrl: public std::runtime_error {
-    public:
-        BadUrl(const std::string& reason): std::runtime_error(reason) { }
-        BadUrl(): std::runtime_error("unspecified") { }
-};
+  class BadUrl: public std::runtime_error {
+  public:
+    BadUrl(const std::string& reason): std::runtime_error(reason) { }
+    BadUrl(): std::runtime_error("unspecified") { }
+  };
 
 /**
  * @brief Exception thrown in case url doesn't parse correctly
  */
-class UrlParseError: public BadUrl {
-public:
+  class UrlParseError: public BadUrl {
+  public:
     UrlParseError(const std::string& reason) : BadUrl(reason) { }
     UrlParseError(): BadUrl() { }
-};
+  };
 
 
 
-class Url {
-public:
+  class Url {
+  public:
     /// @throw UrlParseError on url parsing error
     explicit Url(const std::string& s);
     explicit Url();
@@ -258,17 +258,17 @@ public:
 
     operator safe_bool() const
     {
-        //std::cout << "safe bool" << std::endl;
-        if(empty())
-            return 0;
-        else
-            return &Url::safe_bool_aux;
+      //std::cout << "safe bool" << std::endl;
+      if(empty())
+        return 0;
+      else
+        return &Url::safe_bool_aux;
     }
     void safe_bool_aux() const {}
 
     operator std::string()
     {
-        return get();
+      return get();
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Url& u);
@@ -289,13 +289,13 @@ public:
 
     void clear()
     {
-        m_scheme.clear();
-        clear_authority();
+      m_scheme.clear();
+      clear_authority();
 
-        m_path.clear();
+      m_path.clear();
 
-        clear_query();
-        clear_fragment();
+      clear_query();
+      clear_fragment();
     }
 
 
@@ -358,7 +358,7 @@ public:
     void scheme(const std::string& s);
     std::string scheme() const
     {
-        return m_scheme;
+      return m_scheme;
     }
 
     void authority(const std::string& s);
@@ -369,41 +369,41 @@ public:
      */
     bool has_authority() const
     {
-        return m_has_authority;
+      return m_has_authority;
     }
 
     bool has_scheme() const
     {
-        return (! m_scheme.empty());
+      return (! m_scheme.empty());
     }
 
     void clear_authority()
     {
-        m_host_ip_literal=false;
-        m_has_authority = false;
-        m_userinfo.clear();
-        m_host.clear();
-        m_port.clear();
+      m_host_ip_literal=false;
+      m_has_authority = false;
+      m_userinfo.clear();
+      m_host.clear();
+      m_port.clear();
     }
 
     bool has_query() const
     {
-        return ! m_query.empty();
+      return ! m_query.empty();
     }
 
     void clear_query()
     {
-        m_query.clear();
+      m_query.clear();
     }
 
     bool has_fragment() const
-    { 
-        return ! m_fragment.empty();
+    {
+      return ! m_fragment.empty();
     }
 
     void clear_fragment()
     {
-        m_fragment.clear();
+      m_fragment.clear();
     }
 
     /**
@@ -418,13 +418,13 @@ public:
     void userinfo(const std::string& s);
     std::string userinfo() const
     {
-        return m_userinfo;
+      return m_userinfo;
     }
 
     void host(const std::string& s);
     std::string host() const
     {
-        return m_host;
+      return m_host;
     }
 
     void port(const std::string& s);
@@ -436,7 +436,7 @@ public:
     /// @returns the path
     std::string path() const
     {
-        return m_path.get();
+      return m_path.get();
     }
 
     /// normalize path, removing /./ and /../ segments
@@ -461,10 +461,9 @@ public:
     std::string m_port;
     std::string m_query;
     std::string m_fragment;
-};
+  };
 
 
 } // end ns url
 
 /** @} */
-
