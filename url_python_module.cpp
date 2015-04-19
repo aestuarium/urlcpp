@@ -1,7 +1,7 @@
 /* Python interface */
 //#ifdef EXPORT_PYTHON_INTERFACE
 #include <boost/python.hpp>
-#include "Url.h"
+#include <urlcpp/url.h>
 using namespace boost::python;
 
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(xf_overloads, scheme, 0, 1)
