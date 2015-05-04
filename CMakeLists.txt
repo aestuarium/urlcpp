@@ -22,6 +22,7 @@ add_library(urlcpp STATIC
 )
 
 if(${URLCPP_BUILD_TESTS})
+  set(Boost_USE_STATIC_LIBS   ON)
   find_package (Boost COMPONENTS unit_test_framework REQUIRED)
   add_executable(urlcpp_test Url_test.cpp)
   target_compile_definitions(urlcpp_test PUBLIC BOOST_TEST_MAIN=1)
